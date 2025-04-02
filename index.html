@@ -1,10 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML-Writer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ext-beautify.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #editor-container {
+            width: 50%;
+            height: 100vh;
+            border-right: 2px solid #ccc;
+        }
+        #editor {
+            width: 100%;
+            height: 100%;
+        }
+        #preview-container {
+            width: 50%;
+            height: 100vh;
+            overflow: auto;
+            position: relative;
+        }
+        #preview {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            border: none;
+        }
+        #toggle-drag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: white;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-$END$
+
+<!-- Code Editor (Ace) -->
+<div id="editor-container">
+    <div id="editor"></div>
+</div>
+
+<!-- Live Preview (Editable + Drag-and-Drop) -->
+<div id="preview-container">
+    <button id="toggle-drag">Enable Drag & Drop</button>
+    <iframe id="preview"></iframe>
+</div>
+
+<script>
+    // Initialize Ace Editor
+    var editor = ace.edit("editor");
+    var beautify = ace.require("ace/ext/beautify"); // get reference to extension
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/html");
+    editor.setValue(`<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+    </style>
+</head>
+<body>
+        <h1>Drag Me!</h1>
+        <p>Move this paragraph around.</p>
+        <p>You can reorder these elements.</p>
+</body>
+</html>`, -1);
+    var previewFrame = document.getElementById("preview");
+    var previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+    let isSyncing = false;
+    let sortable = null; // Store Sortable instance
+    let isDragEnabled = false; // Toggle state
+
+    // Function to update the preview from Ace Editor
+    function updatePreview() {
+        if (isSyncing) return;
+        isSyncing = true;
+
+        previewDoc.open();
+        previewDoc.write(editor.getValue());
+        previewDoc.close();
+        enableEditablePreview();
+
+        if (isDragEnabled) {
+            enableDragAndDrop();
+        }
+
+        isSyncing = false;
+    }
+
+    // Make the preview editable (only if drag-and-drop is disabled)
+    function enableEditablePreview() {
+        if (isDragEnabled) return;
+        let body = previewDoc.body;
+        body.setAttribute("contenteditable", "true");
+
+        body.addEventListener("input", () => {
+            if (isSyncing) return;
+            isSyncing = true;
+            editor.session.setValue(previewDoc.documentElement.outerHTML);
+            beautify.beautify(editor.session);
+            isSyncing = false;
+        });
+    }
+
+    // Enable drag-and-drop with Sortable.js
+    function enableDragAndDrop() {
+
+        if (window.getSelection) {
+            let selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                selection.removeAllRanges(); // Properly clear selection if needed
+            }
+        }
+
+        let sortableContainer = previewDoc.body;
+        if (sortableContainer) {
+
+
+            sortableContainer.setAttribute("contenteditable", "false");
+            // Remove contenteditable from all elements
+            previewDoc.body.removeAttribute("contenteditable");
+            // let elements = previewDoc.querySelectorAll("[contenteditable]");
+            // elements.forEach(el => el.removeAttribute("contenteditable"));
+
+            sortable = new Sortable(sortableContainer, {
+                animation: 150,
+                ghostClass: "sortable-ghost",
+                nested: true,
+                onEnd: () => {
+                    if (isSyncing) return;
+                    isSyncing = true;
+                    editor.session.setValue(previewDoc.documentElement.outerHTML);
+                    beautify.beautify(editor.session);
+                    isSyncing = false;
+                }
+            });
+        }
+    }
+
+    // Disable drag-and-drop and restore contenteditable
+    function disableDragAndDrop() {
+        if (sortable) {
+            sortable.destroy();
+            sortable = null;
+        }
+        enableEditablePreview();
+    }
+
+    // Toggle drag-and-drop functionality
+    document.getElementById("toggle-drag").addEventListener("click", function () {
+        isDragEnabled = !isDragEnabled;
+        this.textContent = isDragEnabled ? "Disable Drag & Drop" : "Enable Drag & Drop";
+
+        if (isDragEnabled) {
+            enableDragAndDrop();
+        } else {
+            disableDragAndDrop();
+        }
+    });
+
+    // Sync Ace Editor changes to preview
+    editor.session.on("change", updatePreview);
+
+    // Initial render
+    updatePreview();
+</script>
+
 </body>
 </html>
