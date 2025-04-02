@@ -3,6 +3,7 @@ create documents using HTML, CSS and JavaScript
 
 ## Stuff I want to implement
 - code view and preview view using codemirror or similar
+- make sure to keep scrollheight of both sides in sync
 - html templates that can be saved, loaded and inserted on either side of the editor
 - default styles? or maybe do that via templates
 - contenteditable on the preview side (make it deactivatable for the understandable hate on contenteditable)
