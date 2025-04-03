@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows-Style Toolbar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    .toolbar {
+      background: #ddd;
+      padding: 5px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #aaa;
+    }
+    details {
+      position: relative;
+    }
+    summary {
+      padding: 5px 10px;
+      cursor: pointer;
+      background: #eee;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+    }
+    details[open] > summary {
+      background: #ccc;
+    }
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #aaa;
+      padding: 5px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+    }
+    details .submenu details {
+      position: relative;
+    }
+    details .submenu details .submenu {
+      left: 100%;
+      top: 0;
+    }
+  </style>
+</head>
+<body>
+<nav class="toolbar">
+  <details>
+    <summary>File</summary>
+    <div class="submenu">
+      <details>
+        <summary>New</summary>
+        <div class="submenu">
+          <button>Document</button>
+          <button>Spreadsheet</button>
+        </div>
+      </details>
+      <button>Open</button>
+      <button>Save</button>
+      <button>Exit</button>
+    </div>
+  </details>
+  <details>
+    <summary>Edit</summary>
+    <div class="submenu">
+      <button>Undo</button>
+      <button>Redo</button>
+      <button>Cut</button>
+      <button>Copy</button>
+      <button>Paste</button>
+    </div>
+  </details>
+  <details>
+    <summary>Help</summary>
+    <div class="submenu">
+      <button>Documentation</button>
+      <button>About</button>
+    </div>
+  </details>
+</nav>
+
+<script>
+  // Close all details when clicking outside or clicking another one, except for submenus
+  document.addEventListener('click', function(event) {
+    const allDetails = document.querySelectorAll('details');
+    const isClickInside = event.target.closest('details');
+    const isClickInsideSubmenu = event.target.closest('.submenu');
+
+    // If clicked outside of any <details> element
+    if (!isClickInside) {
+      allDetails.forEach(detail => {
+        detail.removeAttribute('open');
+      });
+    } else {
+      // If the click is inside a submenu, don't close the parent <details>
+      if (!isClickInsideSubmenu) {
+        // Close other open <details> elements if a new one is clicked
+        allDetails.forEach(detail => {
+          if (detail !== isClickInside && detail.hasAttribute('open')) {
+            detail.removeAttribute('open');
+          }
+        });
+      }
+    }
+  });
+</script>
+</body>
+</html>
