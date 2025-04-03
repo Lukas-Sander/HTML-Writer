@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Header & Footer Example</title>
+    <style>
+        @media print {
+            @page {
+                margin: 100px 50px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            thead, tfoot {
+                display: table-header-group; /* Forces header to repeat */
+                text-align: center;
+                font-weight: bold;
+            }
+
+            tfoot {
+                display: table-footer-group; /* Forces footer to repeat */
+            }
+
+            tbody {
+                display: table-row-group;
+            }
+
+            td {
+                page-break-inside: avoid;
+                background: none;
+            }
+        }
+
+
+
+
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            background: #d2aeae;
+        }
+
+        .content {
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <thead>
+    <tr>
+        <td>
+            <div class="print-header">This is the header – appears on every printed page</div>
+        </td>
+    </tr>
+    </thead>
+
+    <tfoot>
+    <tr>
+        <td>
+            <div class="print-footer">This is the footer – appears on every printed page</div>
+        </td>
+    </tr>
+    </tfoot>
+
+    <tbody>
+    <tr>
+        <td>
+            <h1>Printing Example</h1>
+            <p>This document contains a lot of content to demonstrate how the header and footer remain fixed on every page.</p>
+
+            <h2>Section 1</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+
+            <h2>More Content</h2>
+            <p>Aenean imperdiet. Etiam ultricies nisi vel augue...</p>
+
+            <h2>Even More Content</h2>
+            <p>Sed consequat, leo eget bibendum sodales, augue velit cursus nunc...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <h2>Endless Content</h2>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+            <p>Fusce vulputate eleifend sapien. Vestibulum purus quam...</p>
+
+            <p>[Content repeated to ensure multiple pages]</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
