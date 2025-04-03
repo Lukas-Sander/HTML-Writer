@@ -1,6 +1,10 @@
 # HTML-Writer
 create documents using HTML, CSS and JavaScript
 
+This project uses Ace Editor, which is licensed under the MIT License. 
+You can find the source code and license at: https://github.com/ajaxorg/ace
+
+
 ## Stuff I want to implement
 - code view and preview view using codemirror or similar
   - which code editor to use as a base? do i want a super large document or a structure of multiple code parts?
