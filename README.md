@@ -19,6 +19,7 @@ create documents using HTML, CSS and JavaScript
 - page formats
 - perhaps implement other js library for absolute positioning via drag and drop
 - make an installable pwa that can work entirely offline. also work by using local html file? would make autosave and load impossible though (only via indexeddb, not via files)
+  - use github pages to host webapp?
 - extensive, configurable toolbar for managing templates, files etc.
 - quick add toolbar for tables etc., perhaps implement table support via tr/tc add buttons? or define a table before inserting it (actually, templates could probably use a "define variables" dialog before insertion)
 - https://foolishdeveloper.com/custom-right-click-context-menu-using-javascript/
