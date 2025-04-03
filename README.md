@@ -22,4 +22,5 @@ create documents using HTML, CSS and JavaScript
 - extensive, configurable toolbar for managing templates, files etc.
 - quick add toolbar for tables etc., perhaps implement table support via tr/tc add buttons? or define a table before inserting it (actually, templates could probably use a "define variables" dialog before insertion)
 - https://foolishdeveloper.com/custom-right-click-context-menu-using-javascript/
+  - add context menu to both sides to insert blocks from templates etc., also allow typing after customizable trigger key(s) (/, ~, // etc)
 - https://davidwalsh.name/html5-context-menu
