@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML-Writer</title>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ext-beautify.js" type="text/javascript" charset="utf-8"></script> -->
     <style>
         body {
             height: 100vh;
@@ -62,15 +60,14 @@
 
 <div id="toolbar">
     loading...
-    <button onclick="beautifyCode();">Beautify</button>
-    <button onclick="printPreview();">Print</button>
-    <button onclick="saveFile();">Save</button>
-    <button onclick="loadFile();">Load</button>
-    <input type="file" id="fileInput" accept=".html" style="display:none;" onchange="handleFileLoad(event)">
-    <span class="info-saved">cached at <span class="value"></span></span>
+<!--    <button onclick="beautifyCode();">Beautify</button>-->
+<!--    <button onclick="printPreview();">Print</button>-->
+<!--    <button onclick="saveFile();">Save</button>-->
+<!--    <button onclick="loadFile();">Load</button>-->
+<!--    <input type="file" id="fileInput" accept=".html" style="display:none;" onchange="handleFileLoad(event)">-->
+<!--    <span class="info-saved">cached at <span class="value"></span></span>-->
 </div>
 <div id="main">
-
     <!-- Code Editor (Ace) -->
     <div id="editor-container">
         <div id="editor">loading...</div>
@@ -78,7 +75,7 @@
 
     <!-- Live Preview (Editable + Drag-and-Drop) -->
     <div id="preview-container">
-        <iframe id="preview">loading...</iframe>
+        <iframe id="preview"></iframe>
     </div>
 </div>
 
@@ -90,51 +87,72 @@
         #db = null;
 
         constructor() {
-            const me = this;
+            // const me = this;
         }
 
         init() {
             const me = this;
-            const request = indexedDB.open(dbName, 2);
 
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
+            return new Promise((resolve, reject) => {
 
-                // Settings store (appSettings = whole settings JSON)
-                if (!db.objectStoreNames.contains('settings')) {
-                    db.createObjectStore('settings');
-                }
+                const request = indexedDB.open(dbName, 3);
 
-                // Document Cache store (id + name per file)
-                if (!db.objectStoreNames.contains('documentCache')) {
-                    const store = db.createObjectStore('documentCache', { keyPath: 'id' });
-                    store.createIndex('name', 'name', { unique: true });
-                }
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
 
-                /**
-                 * Scripts store (id + URL + script content)
-                 * {
-                 *   name: 'ace',
-                 *   url: 'https://cdnjs.cloudflare.com/.../ace.js',
-                 *   code: '...script contents...'
-                 * }
-                 */
-                if (!db.objectStoreNames.contains('scripts')) {
-                    const store = db.createObjectStore('scripts', { keyPath: 'name' });
-                    store.createIndex('url', 'url', { unique: true });
-                }
+                    // Settings store (appSettings = whole settings JSON)
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings');
+                    }
 
-                // Templates store (name + html string)
-                if (!db.objectStoreNames.contains('templates')) {
-                    db.createObjectStore('templates', { keyPath: 'name' });
-                }
-            };
+                    // Document Cache store (id + name per file)
+                    if (!db.objectStoreNames.contains('documentCache')) {
+                        const store = db.createObjectStore('documentCache', {keyPath: 'id'});
+                        store.createIndex('name', 'name', {unique: true});
+                    }
 
-            //add event listener for persistent storage. once per start of tool
-            document.addEventListener("click", me.#requestPersistentStorage, { once: true });
+                    /**
+                     * Scripts store (id + URL + script content)
+                     * {
+                     *   name: 'ace',
+                     *   url: 'https://cdnjs.cloudflare.com/.../ace.js',
+                     *   code: '...script contents...'
+                     * }
+                     */
+                    if (!db.objectStoreNames.contains('scripts')) {
+                        const store = db.createObjectStore('scripts', {keyPath: 'name'});
+                        store.createIndex('url', 'url', {unique: true});
+                    }
+
+                    // Templates store (name + html string)
+                    if (!db.objectStoreNames.contains('templates')) {
+                        db.createObjectStore('templates', {keyPath: 'name'});
+                    }
+                };
+
+                //upon success, save db instance in runtime
+                request.onsuccess = (event) => {
+                    me.#db = event.target.result;
+
+                    //add event listener for persistent storage. once per start of tool
+                    document.addEventListener("click", me.#requestPersistentStorage, {once: true});
+
+                    resolve(me.#db);
+                };
+
+                request.onerror = () => {
+                    console.error('DB init failed:', request.error);
+                    reject(request.error);
+                };
+
+            });
         }
 
-        async #requestPersistentStorage() {
+        /**
+         * requests persistent storage once upon first page interaction, once.
+         * @returns {Promise<void>}
+         */
+        #requestPersistentStorage = async () => {
             const me = this;
             if (navigator.storage && navigator.storage.persist) {
                 const isPersistent = await navigator.storage.persisted();
@@ -152,30 +170,42 @@
 
             // Remove listener after the first attempt
             document.removeEventListener("click", me.#requestPersistentStorage);
-        }
+        };
 
-        async getMissingScripts(keys) {
-            const me = this;
-
-            const db = me.#db;
+        /**
+         * takes a number of names with corresponsing urls and returns the missing or mismatched entries.
+         * name missing from db = missing
+         * name match, url mismatch = mismatch
+         * @param {Object} scriptsObj
+         * @returns {Promise<*[]>}
+         */
+        async getMissingScripts(scriptsObj) {
+            const db = this.#db;
             const tx = db.transaction('scripts', 'readonly');
             const store = tx.objectStore('scripts');
 
-            const missing = [];
-            for (const key of keys) {
-                const request = store.get(key);
+            const missingOrMismatched = [];
+
+            for (const [name, url] of Object.entries(scriptsObj)) {
+                const request = store.get(name);
                 const result = await new Promise(res => {
                     request.onsuccess = () => res(request.result);
                     request.onerror = () => res(null);
                 });
-                if (!result) {
-                    missing.push(key);
+
+                if (!result || result.url !== url) {
+                    missingOrMismatched.push(name);
                 }
             }
-            return missing;
+
+            return missingOrMismatched;
         }
 
-
+        /**
+         * read scripts from db and return them as an array (containing objects)
+         * @param keys
+         * @returns {Promise<*[]>}
+         */
         async getScripts(keys) {
             const db = this.#db;
             const tx = db.transaction('scripts', 'readonly');
@@ -188,12 +218,31 @@
                     request.onsuccess = () => res(request.result);
                     request.onerror = () => res(null);
                 });
-                if (script) result.push(script);
+                if (script) {
+                    result.push(script);
+                }
             }
             return result;
         }
 
+        /**
+         * save script in the db with a unique key and url
+         * @param name name of the script, unique
+         * @param url url origin of the script, should be unique
+         * @param code textcontent of the script
+         * @returns {Promise<boolean|Event|OfflineAudioCompletionEvent|((result?: PaymentComplete) => Promise<void>)>}
+         */
+        async saveScript(name, url, code) {
+            const me = this;
+            const tx = me.#db.transaction('scripts', 'readwrite');
+            tx.objectStore('scripts').put({name: name, url: url, code: code});
+            return tx.complete;
+        }
 
+        /**
+         * read settings from db and return them. its a json object
+         * @returns {Promise<unknown>}
+         */
         async getSettings() {
             const db = this.#db;
             const tx = db.transaction('settings', 'readonly');
@@ -234,26 +283,32 @@
             this.#db = db;
         }
         async loadCore() {
-            const missing = await this.#db.getMissingScripts(Object.keys(this.#coreScripts));
+            const missing = await this.#db.getMissingScripts(this.#coreScripts);
 
             for (const key of missing) {
                 const url = this.#coreScripts[key];
-                const code = await this.#fetchScript(url);
-                await this.#saveScript(key, url, code);
+                const code = await this.fetchScript(url);
+                await this.#db.saveScript(key, url, code);
             }
+        }
 
-            // Now load all scripts from DB into DOM
+        /**
+         * calls inject function for all scripts stored in the database
+         * @returns {Promise<void>}
+         */
+        async injectScripts() {
             const scripts = await this.#db.getScripts(Object.keys(this.#coreScripts));
             for (const script of scripts) {
-                this.#injectScript(script.code);
+                this.#injectScript(script.code, script.name);
             }
         }
 
-
-        async #fetchScripts(url) {
-            const me = this;
-            const scriptsDb = me.#db.getScripts();
-
+        /**
+         * fetches script content and returns it for saving in the db
+         * @param url
+         * @returns {Promise<string>}
+         */
+        async fetchScript(url) {    //TODO: make offline check. if offline and need to load script, alert user, if offline and no need to load script, just skip fetching
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Failed to fetch ${url}`);
@@ -261,25 +316,16 @@
             return await response.text();
         }
 
-        async #fetchScript(url) {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch ${url}`);
-            }
-            return await response.text();
-        }
-
-        async #saveScript(key, scriptText) {
-            const me = this;
-            const tx = me.#db.transaction('scripts', 'readwrite');
-            tx.objectStore('scripts').put(scriptText, key);
-            return tx.complete;
-        }
-
-        #injectScript(code) {
+        /**
+         * inject single script code into document head
+         * @param code
+         * @param name
+         */
+        #injectScript(code, name) {
             const script = document.createElement('script');
             script.type = 'text/javascript';
             script.text = code;
+            script.dataset.name = name;
             document.head.appendChild(script);
         }
     }
@@ -329,7 +375,7 @@
                 me.#scriptLoader = new ScriptLoader(me.#db);
                 const l = me.#scriptLoader;
                 // await l.init();
-                await l.fetchScripts();
+                await l.loadCore();
                 await l.injectScripts();
                 resolve();
             });
@@ -340,11 +386,11 @@
     await main.initDb();
     await main.loadSettings();
     await main.initScripts();
-    await main.loadToolbar();
-    await main.initAce();
-    await main.initToolbar();
-    await main.initAutosave();
-    await main.start();
+    // await main.loadToolbar();
+    // await main.initAce();
+    // await main.initToolbar();
+    // await main.initAutosave();
+    // await main.start();
 
 </script>
 <!--
