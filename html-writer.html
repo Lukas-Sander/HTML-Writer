@@ -38,6 +38,7 @@
         #editor-container {
             width: 50%;
             height: 100%;
+            border-right: 1px solid black;
         }
         #editor {
             width: 100%;
@@ -58,22 +59,11 @@
 </head>
 <body>
 
-<div id="toolbar">
-    loading...
-<!--    <button onclick="beautifyCode();">Beautify</button>-->
-<!--    <button onclick="printPreview();">Print</button>-->
-<!--    <button onclick="saveFile();">Save</button>-->
-<!--    <button onclick="loadFile();">Load</button>-->
-<!--    <input type="file" id="fileInput" accept=".html" style="display:none;" onchange="handleFileLoad(event)">-->
-<!--    <span class="info-saved">cached at <span class="value"></span></span>-->
-</div>
+<div id="toolbar"></div>
 <div id="main">
-    <!-- Code Editor (Ace) -->
     <div id="editor-container">
         <div id="editor">loading...</div>
     </div>
-
-    <!-- Live Preview (Editable + Drag-and-Drop) -->
     <div id="preview-container">
         <iframe id="preview"></iframe>
     </div>
@@ -267,8 +257,68 @@
     }
 
     class Toolbar {
-        constructor(db) {
+        #core = {
+            beautify: {
+                type: 'BUTTON',
+                text: 'beautify',
+                onclick: this.beautifyCode.bind(this),
+                // shortcut: 'Ctrl+Shift+B',    //TODO: later, add customizable shortcuts
+            },
+            // printPreview: {
+            //     type: 'BUTTON',
+            //     text: 'print',
+            //     onclick: 'me.#toolbar.printPreview()',
+            //     // shortcut: 'Ctrl+Shift+P',
+            // },
+            // saveFile: {
+            //     type: 'BUTTON',
+            //     text: 'save',
+            //     onclick: 'me.#toolbar.saveFile()',
+            //     // shortcut: 'Ctrl+Shift+P',
+            // },
+            // loadFile: {
+            //     type: 'BUTTON',
+            //     text: 'load',
+            //     onclick: 'me.#toolbar.loadFile()',
+            //     // shortcut: 'Ctrl+Shift+P',
+            // },
+        };
+        #db;
+        #ace;
+        #aceBeautify;
+        #container;
 
+        constructor(db, ace, aceBeautify) {
+            const me = this;
+            me.#db = db;
+            me.#ace = ace;
+            me.#aceBeautify = aceBeautify;
+        }
+
+        async init() {
+            const me = this;
+            me.#container = document.querySelector('#toolbar');
+
+            for (const [key, value] of Object.entries(me.#core)) {
+                me.#addToolbarEntry(key, value);
+            }
+
+            //TODO: later put more options to configure this
+        }
+
+        #addToolbarEntry (key, conf) {
+            const entry = document.createElement(conf.type);
+            if(conf.type === 'BUTTON') {
+                entry.innerText = conf.text;
+                entry.addEventListener('click', conf.onclick);
+            }
+            this.#container.appendChild(entry);
+
+        }
+
+        beautifyCode() {
+            console.log('beautify code');
+            console.log(this);
         }
     }
 
@@ -337,6 +387,9 @@
         #db;
         #settings;
         #scriptLoader;
+        #toolbar;
+        #ace;
+        #aceBeautify;
 
         /**
          * save the db instance into runtime and initialize it
@@ -380,15 +433,30 @@
                 resolve();
             });
         }
+
+        /**
+         * initializes and starts toolbar
+         * @returns {Promise<void>}
+         */
+        async initToolbar() {
+            const me = this;
+            me.#toolbar = new Toolbar(me.#db, me.#ace, me.#aceBeautify);
+            await me.#toolbar.init();   //loads toolbar from db config
+            // await me.#toolbar.start();  //creates toolbar elements and listeners
+        }
+
+        async initAce() {
+            this.#ace = ace.edit("editor");
+            this.#aceBeautify = ace.require("ace/ext/beautify");
+        }
     }
 
     const main = new Main();
     await main.initDb();
     await main.loadSettings();
     await main.initScripts();
-    // await main.loadToolbar();
-    // await main.initAce();
-    // await main.initToolbar();
+    await main.initAce();
+    await main.initToolbar();
     // await main.initAutosave();
     // await main.start();
 
