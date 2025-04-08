@@ -22,7 +22,7 @@ class Database {
                 //     db.createObjectStore('settings');
                 // }
 
-                // Document Cache store (id + name per file)
+                // Document Cache store (filename: string, content: largetext)
                 if (!db.objectStoreNames.contains('documentCache')) {
                     const store = db.createObjectStore('documentCache', {keyPath: 'id'});
                 }
