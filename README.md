@@ -4,6 +4,8 @@ create documents using HTML, CSS and JavaScript
 This project uses Ace Editor, which is licensed under the MIT License. 
 You can find the source code and license at: https://github.com/ajaxorg/ace
 
+You can insert more extensions and themes from ace by loading your preferred files from [https://github.com/ajaxorg/ace-builds](https://github.com/ajaxorg/ace-builds)
+
 Currently working state can be found [here](index.html)
 
 User guide can be found [here](docs/userguide.md)
@@ -34,3 +36,4 @@ Project documentation can be found [here](docs/documentation.md)
 - https://foolishdeveloper.com/custom-right-click-context-menu-using-javascript/
   - add context menu to both sides to insert blocks from templates etc., also allow typing after customizable trigger key(s) (/, ~, // etc)
 - https://davidwalsh.name/html5-context-menu
+- create executables for easy use? utilizing neutralino
