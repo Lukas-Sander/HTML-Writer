@@ -3,18 +3,24 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    font-family: sans-serif;
 }
 #content {
     display: flex;
     flex-grow: 1;
 }
+
+/* TOOLBAR */
 #toolbar {
     padding: 5px;
     background: #333;
     color: white;
     overflow-x: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-#toolbar button {
+#toolbar .toolbar-tools button {
     background: #555;
     color: white;
     border: none;
@@ -22,10 +28,12 @@ body {
     margin-right: 5px;
     cursor: pointer;
 }
-#toolbar .info-saved {
-    float: right;
+#toolbar .toolbar-info label span {
+    background: lightgray;
+    padding: 2px;
+    color: black;
 }
-#toolbar button:hover {
+#toolbar .toolbar-tools button:hover {
     background: #3e787a;
 }
 #editor-container {
@@ -47,4 +55,22 @@ body {
     width: 100%;
     height: 100%;
     border: none;
+}
+
+#version-info {
+    position: fixed;
+    bottom: 0;
+    z-index: 99;
+    background: white;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid black;
+    border-bottom: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    padding: 2px 4px 0px 4px;
+    opacity: 0.25;
+}
+#version-info:hover {
+    opacity: 1;
 }

@@ -3,15 +3,16 @@
 /**
  * main program. no other classes should be accessed from the plain script
  */
+// TODO: split into Application, Frontend, Backend classes
 class Main {
     #db;
-    #scriptLoader;
     toolbar;
     #ace;
     #aceBeautify;
     #previewFrame = document.getElementById("preview");
     #previewDoc = this.#previewFrame.contentDocument || this.#previewFrame.contentWindow.document;
     #cacheTimeout;
+    documentName;
 
     /**
      * save the db instance into runtime and initialize it
@@ -34,24 +35,6 @@ class Main {
         const me = this;
         return new Promise(async (resolve) => {
             // me.#settings = await me.#db.getSettings();
-            resolve();
-        });
-    }
-
-    /**
-     * init scriptloader.
-     * then fetch-save (if necessary).
-     * then load scripts into app
-     * @returns {Promise<void>}
-     */
-    async initScripts() {
-        const me = this;
-        return new Promise(async (resolve) => {
-            me.#scriptLoader = new ScriptLoader(me.#db);
-            const l = me.#scriptLoader;
-            // await l.init();
-            await l.loadCore();
-            await l.injectScripts();
             resolve();
         });
     }
@@ -82,8 +65,9 @@ class Main {
     async loadDocumentFromCache() {
         const me = this;
         return new Promise(async (resolve) => {
-            const content = await me.#db.getDocumentCache();
-            me.#ace.setValue(content, -1);
+            const data = await me.#db.getDocumentCache();
+            me.#ace.setValue(data.content, -1);
+            me.documentName = data.name;
             me.updatePreview();
             resolve();
         });
@@ -105,5 +89,50 @@ class Main {
         this.#ace.session.on("change", function () {
             me.updatePreview();
         });
+    }
+
+    async startCachingListener() {
+        const me = this;
+        // Auto-cache on page close or when hidden
+        window.addEventListener("beforeunload", () => { me.cacheDocument(); });
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                clearTimeout(me.#cacheTimeout);
+                me.cacheDocument();
+            }
+        });
+
+        //start listener on code change with scheduler
+        this.#ace.session.on("change", function () {
+            clearTimeout(me.#cacheTimeout);
+            me.scheduleUpdatePreview();
+        });
+    }
+
+    scheduleUpdatePreview() {
+        const me = this;
+        clearTimeout(me.#cacheTimeout);
+        me.#cacheTimeout = setTimeout(function () {
+            me.cacheDocument();
+        }, 10000);  //10 seconds wait time until we start caching
+    }
+
+    /**
+     * save document cache into indexedDB
+     */
+    async cacheDocument() {
+        const me = this;
+        const content = me.#ace.getValue();
+        const name = me.documentName;
+        await me.#db.cacheDocumentDb(name, content);
+
+        me.toolbar.updateDocumentName(name);
+
+        const currentDate = new Date();
+        this.toolbar.updateDocumentCachetime(currentDate.toLocaleString());
+    }
+
+    updateToolbarInfo() {
+        this.toolbar.updateDocumentName(this.documentName);
     }
 }

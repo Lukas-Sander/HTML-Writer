@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await main.initAce();
     await main.initToolbar();
     await main.loadDocumentFromCache();
+    main.updateToolbarInfo();
     await main.startPreviewUpdateListener();
     await main.startCachingListener();
 });

@@ -4,7 +4,10 @@ class Toolbar {
     #ace;
     #aceBeautify;
     #container;
+    #tools;
     #main;
+    #documentNameDOM;
+    #cacheTimeDOM;
 
     constructor(db, ace, aceBeautify) {
         const me = this;
@@ -16,6 +19,9 @@ class Toolbar {
         const me = this;
         me.#main = main;
         me.#container = document.querySelector('#toolbar');
+        me.#tools = me.#container.querySelector('.toolbar-tools');
+        me.#documentNameDOM = me.#container.querySelector('#documentName');
+        me.#cacheTimeDOM = me.#container.querySelector('#documentCacheTime');
 
         for (const [key, value] of Object.entries(settings.toolbar)) {
             me.#addToolbarEntry(key, value);
@@ -40,7 +46,7 @@ class Toolbar {
             default:
                 break;
         }
-        this.#container.appendChild(entry);
+        this.#tools.appendChild(entry);
 
     }
     beautifyCode() {
@@ -68,7 +74,6 @@ class Toolbar {
 
     handleDocumentLoad(event) {
         const me = this;
-        console.log('handle document load');
         const file = event.target.files[0];
         if (!file) {
             return;
@@ -78,7 +83,17 @@ class Toolbar {
         reader.onload = function (e) {
             me.#ace.setValue(e.target.result, -1);
             me.#main.updatePreview();
+            me.#main.documentName = file.name;
+            me.#main.cacheDocument();
         };
         reader.readAsText(file);
+    }
+
+    updateDocumentName(name) {
+        this.#documentNameDOM.innerText = name;
+    }
+
+    updateDocumentCachetime(timeStr) {
+        this.#cacheTimeDOM.innerText = timeStr;
     }
 }
