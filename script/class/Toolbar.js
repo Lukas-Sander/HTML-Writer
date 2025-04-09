@@ -63,7 +63,7 @@ class Toolbar {
         const blob = new Blob([content], { type: "text/html" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "DOCUMENTNAME.html";
+        a.download = this.#main.documentName ?? "DOCUMENTNAME.html";
         a.click();
         URL.revokeObjectURL(a.href);
     }
