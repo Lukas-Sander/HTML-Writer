@@ -74,3 +74,38 @@ body {
 #version-info:hover {
     opacity: 1;
 }
+
+/* CONTEXT MENU */
+.context-menu {
+    position: absolute;
+    z-index: 9999;
+    display: none;
+    min-width: 160px;
+    background-color: #2b2b2b;
+    border: 1px solid #444;
+    font-size: 0.75rem;
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);*/
+    /*border-radius: 6px;*/
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.context-menu li {
+    padding: 8px 14px;
+    color: #eee;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.context-menu li:hover {
+    background-color: #3e787a;
+    color: #fff;
+}
+
+.context-menu li:not(:last-child):after {
+    height: 1px;
+    background: #444;
+    margin: 4px 0;
+}

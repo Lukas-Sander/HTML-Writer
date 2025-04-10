@@ -1,8 +1,8 @@
 'use strict';
 
 class Toolbar {
-    #ace;
-    #aceBeautify;
+    ace;
+    aceBeautify;
     #container;
     #tools;
     #main;
@@ -11,8 +11,8 @@ class Toolbar {
 
     constructor(db, ace, aceBeautify) {
         const me = this;
-        me.#ace = ace;
-        me.#aceBeautify = aceBeautify;
+        me.ace = ace;
+        me.aceBeautify = aceBeautify;
     }
 
     async init(main) {
@@ -50,7 +50,7 @@ class Toolbar {
 
     }
     beautifyCode() {
-        this.#aceBeautify.beautify(this.#ace.session);
+        this.aceBeautify.beautify(this.ace.session);
     }
     printPreview() {
         const previewFrame = document.getElementById("preview");
@@ -59,7 +59,7 @@ class Toolbar {
     }
 
     saveDocument() {
-        const content = this.#ace.getValue();
+        const content = this.ace.getValue();
         const blob = new Blob([content], { type: "text/html" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
@@ -81,7 +81,7 @@ class Toolbar {
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            me.#ace.setValue(e.target.result, -1);
+            me.ace.setValue(e.target.result, -1);
             me.#main.updatePreview();
             me.#main.documentName = file.name;
             me.#main.cacheDocument();

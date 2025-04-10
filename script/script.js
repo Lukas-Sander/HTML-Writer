@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     main.updateToolbarInfo();
     await main.startPreviewUpdateListener();
     await main.startCachingListener();
+    await main.initContextMenu();
 });
 
 
