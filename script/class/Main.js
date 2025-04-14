@@ -161,7 +161,7 @@ class Main {
             // Hide on click outside
             document.addEventListener("click", function (e) {
                 // if (!menu.contains(e.target)) {
-                    menu.style.display = "none";
+                menu.style.display = "none";
                 // }
             });
 
@@ -180,5 +180,18 @@ class Main {
                 }
             });
         }
+    }
+
+    async initMobileButtons() {
+        let container = document.getElementById('content');
+        return new Promise(async (resolve) => {
+            document.querySelectorAll('.switch-view').forEach((el) => {
+                el.addEventListener('click', () => {
+                    container.classList.toggle('view-preview');
+                })
+            });
+
+            resolve();
+        });
     }
 }

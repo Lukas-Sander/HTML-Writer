@@ -20,6 +20,7 @@ Sections: Hotfixes, Bugfixes, Security, Features Added, Features Updated, Featur
 ## [0.0.2] - xxxx-xx-xx
 ### Features Added
 - save-button now uses the filename of the currently cached document as default
+- mobile view: button to switch between views
 
 ## [0.0.1] - 2025-04-09 - Initial Release
 ### Features Added

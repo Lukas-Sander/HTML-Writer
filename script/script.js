@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await main.startPreviewUpdateListener();
     await main.startCachingListener();
     await main.initContextMenu();
+    await main.initMobileButtons();
 });
 
 

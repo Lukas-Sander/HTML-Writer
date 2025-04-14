@@ -109,3 +109,38 @@ body {
     background: #444;
     margin: 4px 0;
 }
+
+.switch-view {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    #editor-container,
+    #preview-container {
+        width: 100%;
+        border: none;
+    }
+
+    #content {
+        display: block;
+    }
+
+    #preview-container {
+        display: none;
+    }
+
+    #content.view-preview #preview-container {
+        display: block;
+    }
+    #content.view-preview #editor-container {
+        display: none;
+    }
+
+    .switch-view {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        opacity: 0.75;
+    }
+}
