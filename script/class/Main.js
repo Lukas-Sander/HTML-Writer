@@ -135,4 +135,63 @@ class Main {
     updateToolbarInfo() {
         this.toolbar.updateDocumentName(this.documentName);
     }
+
+    async initContextMenu() {
+        const me = this;
+        const menu = document.querySelector('.context-menu');
+        if(menu) {
+            //create context menu items
+            for (const [key, value] of Object.entries(settings.contextMenu.customMenuOptions)) {
+                const li = document.createElement("li");
+                li.innerText = value.text;
+                li.addEventListener("click", () => {
+                    value.onclick();
+                });
+                menu.append(li);
+            }
+            //initialize context menu
+            document.getElementById("editor").addEventListener("contextmenu", function (e) {
+                // e.preventDefault();
+
+                menu.style.left = `calc(${e.pageX}px - 165px)`;
+                menu.style.top = `${e.pageY}px`;
+                menu.style.display = "block";
+            });
+
+            // Hide on click outside
+            document.addEventListener("click", function (e) {
+                // if (!menu.contains(e.target)) {
+                menu.style.display = "none";
+                // }
+            });
+
+            me.#previewFrame.addEventListener("load", () => {
+                me.#previewDoc.addEventListener("click", () => {
+                    menu.style.display = "none";
+                });
+            });
+
+            window.addEventListener("blur", () => {
+                menu.style.display = "none";
+            });
+            document.addEventListener('keydown', function(e) {
+                if (menu.style.display === 'block') {
+                    menu.style.display = "none";
+                }
+            });
+        }
+    }
+
+    async initMobileButtons() {
+        let container = document.getElementById('content');
+        return new Promise(async (resolve) => {
+            document.querySelectorAll('.switch-view').forEach((el) => {
+                el.addEventListener('click', () => {
+                    container.classList.toggle('view-preview');
+                })
+            });
+
+            resolve();
+        });
+    }
 }
