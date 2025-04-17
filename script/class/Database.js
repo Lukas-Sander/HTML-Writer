@@ -76,7 +76,7 @@ class Database {
                     resolve(data);
                 }
                 else {
-                    resolve(null);
+                    resolve({name:'', content: ''});
                 }
             };
 

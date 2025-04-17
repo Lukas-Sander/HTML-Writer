@@ -1,6 +1,10 @@
 # Changelog
 Sections: Hotfixes, Bugfixes, Security, Features Added, Features Updated, Features Removed, Code Optimization, UI/UX
 
+## [0.0.3] - 2025-04-17
+### Hotfix
+- loading from document cache on a nonexisting/empty database caused an error
+
 ## [0.0.2] - 2025-04-17
 ### Features Added
 - save-button now uses the filename of the currently cached document as default
