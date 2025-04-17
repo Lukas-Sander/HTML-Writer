@@ -1,7 +1,7 @@
 # Changelog
 Sections: Hotfixes, Bugfixes, Security, Features Added, Features Updated, Features Removed, Code Optimization, UI/UX
 
-## [0.0.2] - xxxx-xx-xx
+## [0.0.2] - 2025-04-17
 ### Features Added
 - save-button now uses the filename of the currently cached document as default
 - mobile view: button to switch between views
